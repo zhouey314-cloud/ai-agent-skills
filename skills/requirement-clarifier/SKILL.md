@@ -1,19 +1,46 @@
+---
+name: requirement-clarifier
+description: Clarify an ambiguous build request into a testable scope when goals, stakeholders, or acceptance criteria are unclear.
+---
+
 # Requirement Clarifier
 
-Convert an ambiguous request into an agreed, testable scope. Ask only for a choice that materially changes the result. Do not invent business rules.
+## Purpose
 
-## Input schema
+Turn a vague request into a minimal, falsifiable delivery contract without making up business rules.
 
-`request: string`, `known_constraints: string[]`, `stakeholders: string[]`.
+## When to Use
 
-## Output schema
+Use before implementation when the input leaves ownership, success, data source, or irreversible actions ambiguous.
 
-`goal`, `in_scope`, `out_of_scope`, `acceptance_criteria`, `open_decisions`, `assumptions`.
+## Inputs
+
+`request`, `known_constraints[]`, `stakeholders[]`, optional `existing_artifacts[]` and `decision_deadline`.
+
+## Outputs
+
+`goal`, `in_scope[]`, `out_of_scope[]`, `acceptance_criteria[]`, `assumptions[]`, `open_decisions[]`, `evidence_needed[]`.
+
+## Workflow
+
+1. Restate the user's desired outcome in one sentence and separate outcome from requested implementation.
+2. Extract hard constraints and existing evidence verbatim; label anything inferred as an assumption.
+3. Draft at most three acceptance checks that a reviewer can reproduce.
+4. Ask only for decisions that materially change scope, risk or external state; continue with reversible work meanwhile.
+5. Return the scope contract and mark each open decision with its owner and blocking effect.
+
+## Failure Handling
+
+If the owner of a business rule is unknown, mark `BLOCKED_OWNER_DECISION`; do not invent a default. If source evidence is missing, mark the criterion provisional.
 
 ## Example
 
-`synthetic_unverified`: “Build a sample FAQ” → acceptance: five cited answers and a no-answer path; open decision: approved source set.
+`synthetic_unverified`: “Build a sample FAQ” becomes five cited answers plus a no-answer path; the approved source set remains an open decision.
 
-## Failure modes
+## Tests
 
-Inventing requirements, asking every optional question, omitting acceptance criteria.
+Run `python3 tests/validate.py` from the repository root to check this skill's contract and example provenance. This is a structural test, not model-quality evidence.
+
+## Limitations
+
+This skill cannot substitute for customer sign-off or legal/product ownership.

@@ -1,19 +1,46 @@
+---
+name: research-synthesizer
+description: Compare provided sources, distinguish fact from inference, and surface dated conflicts in a research answer.
+---
+
 # Research Synthesizer
 
-Compare supplied sources and separate facts, disagreements and inferences. Prefer primary evidence where available.
+## Purpose
 
-## Input schema
+Produce a synthesis with traceable citations and explicit disagreement.
 
-`question`, `sources: [{title,url,date,excerpt}]`, `as_of_date`.
+## When to Use
 
-## Output schema
+Use when multiple documents or links disagree or when freshness matters.
 
-`findings: [{claim,citations,confidence}]`, `conflicts`, `gaps`, `inferences`.
+## Inputs
+
+`question`, `sources: [{id,title,url,date,excerpt}]`, `as_of_date`.
+
+## Outputs
+
+`findings: [{claim,citations,confidence}]`, `conflicts[]`, `gaps[]`, `inferences[]`.
+
+## Workflow
+
+1. Inventory source dates and whether each is primary or secondary.
+2. Extract relevant claims and quote only short supporting spans.
+3. Group agreement, disagreement and missing evidence separately.
+4. Label inferences as inferences and avoid resolving conflicts without evidence.
+5. Return a concise synthesis with citations and a freshness caveat.
+
+## Failure Handling
+
+A broken citation or stale source blocks a current-fact claim. If sources conflict, report the conflict instead of selecting a convenient answer.
 
 ## Example
 
-`synthetic_unverified`: two fictional guides disagree on a deadline → report conflict, do not choose a winner without evidence.
+`synthetic_unverified`: two fictional guides disagree on a deadline; the output reports the conflict.
 
-## Failure modes
+## Tests
 
-Broken citations, stale facts treated as current, inference described as source text.
+Run `python3 tests/validate.py` from the repository root to check this skill's contract and example provenance. This is a structural test, not model-quality evidence.
+
+## Limitations
+
+No live browsing is implied by this skill; it can only analyze sources actually supplied or retrieved with authorized tools.
