@@ -1,19 +1,46 @@
+---
+name: evidence-content
+description: Draft content from a provenance-tagged claim ledger when factual support and approval boundaries matter.
+---
+
 # Evidence Content
 
-Draft content from a claim ledger. Separate verified claims from hypotheses and omit unsupported assertions.
+## Purpose
 
-## Input schema
+Turn approved claims into channel-ready copy while exposing unsupported or provisional claims.
 
-`claims: [{text,source_id,verification_state}]`, `audience`, `channel`.
+## When to Use
 
-## Output schema
+Use for public, sales or technical content where a source map is needed and invented proof would be harmful.
 
-`draft`, `claim_map: [{claim,source_id}]`, `uncertain_claims`, `review_state`.
+## Inputs
+
+`claims: [{text,source_id,verification_state,scope}]`, `audience`, `channel`, optional `style_rules[]`.
+
+## Outputs
+
+`draft`, `claim_map[]`, `uncertain_claims[]`, `review_state`.
+
+## Workflow
+
+1. Classify each claim as verified, source-limited, hypothetical or unsupported.
+2. Exclude unsupported metrics, customer outcomes and authority claims from the draft.
+3. Draft for the audience without strengthening the claim beyond its source scope.
+4. Map each material statement back to a source ID and retain important qualifications.
+5. Run a final contradiction/privacy check and send uncertain claims to a named human reviewer.
+
+## Failure Handling
+
+If a material statement lacks support, remove it or label it explicitly as a hypothesis; set `review_state=BLOCKED` for unapproved high-impact claims.
 
 ## Example
 
-`synthetic_unverified`: fictional feature claim cites spec-1; adoption numbers with no source are excluded.
+`synthetic_unverified`: a fictional feature claim cites spec-1; an adoption number without a source is omitted.
 
-## Failure modes
+## Tests
 
-Fabricated metrics, lost qualifications, channel copy that overstates evidence.
+Run `python3 tests/validate.py` from the repository root to check this skill's contract and example provenance. This is a structural test, not model-quality evidence.
+
+## Limitations
+
+The skill structures evidence but does not prove a source is authentic, licensed or up to date.
